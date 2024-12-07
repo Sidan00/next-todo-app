@@ -8,7 +8,7 @@ import Button from '@/app/components/ui/Button';
 import ImageUpload from '@/app/components/todo/ImageUpload';
 import { uploadToS3 } from '@/app/lib/s3';
 
-export default function TodoDetail({ id }: { id: string }) {
+export default function TodoDetail({ _id }: { _id: string }) {
   const router = useRouter();
   const [item, setItem] = useState<TodoItem | null>(null);
   const [formData, setFormData] = useState<UpdateTodoDto>({});
@@ -20,7 +20,7 @@ export default function TodoDetail({ id }: { id: string }) {
     const loadItem = async () => {
       try {
         setIsLoading(true);
-        const data = await todoApi.getItem(id);
+        const data = await todoApi.getItem(_id);
         setItem(data);
         setFormData(data);
       } catch (error) {
@@ -31,7 +31,7 @@ export default function TodoDetail({ id }: { id: string }) {
       }
     };
     loadItem();
-  }, [id, router]);
+  }, [_id, router]);
 
   const handleImageSelect = (file: File) => {
     setError(null);
