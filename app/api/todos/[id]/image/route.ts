@@ -6,6 +6,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params;
   await dbConnect();
 
   try {
@@ -22,7 +23,7 @@ export async function POST(
     const imageUrl = '/temp-image-url';
 
     const updatedTodo = await Todo.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: { imageUrl } },
       { new: true, runValidators: true }
     );
