@@ -10,28 +10,31 @@ console.log('API Configuration:', {
   formattedUrl: `${BASE_URL}/${TENANT_ID}/items`,
 });
 
+// id를 _id로 변환하는 헬퍼 함수
+const transformItem = (item: any): TodoItem => ({
+  ...item,
+  _id: item.id,
+});
+
 export const todoApi = {
   getItems: async (): Promise<TodoItem[]> => {
     const response = await axios.get(`${BASE_URL}/${TENANT_ID}/items`);
-    return response.data.map((item: any) => ({
-      ...item,
-      _id: item.id,
-    }));
+    return response.data.map(transformItem);
   },
 
   createItem: async (data: CreateTodoDto): Promise<TodoItem> => {
     const response = await axios.post(`${BASE_URL}/${TENANT_ID}/items`, data);
-    return response.data;
+    return transformItem(response.data);
   },
 
   getItem: async (_id: string): Promise<TodoItem> => {
     const response = await axios.get(`${BASE_URL}/${TENANT_ID}/items/${_id}`);
-    return response.data;
+    return transformItem(response.data);
   },
 
   updateItem: async (_id: string, data: UpdateTodoDto): Promise<TodoItem> => {
     const response = await axios.patch(`${BASE_URL}/${TENANT_ID}/items/${_id}`, data);
-    return response.data;
+    return transformItem(response.data);
   },
 
   deleteItem: async (_id: string): Promise<void> => {
