@@ -32,9 +32,20 @@ export const todoApi = {
     return transformItem(response.data);
   },
 
-  updateItem: async (_id: string, data: UpdateTodoDto): Promise<TodoItem> => {
-    const response = await axios.patch(`${BASE_URL}/${TENANT_ID}/items/${_id}`, data);
-    return transformItem(response.data);
+  updateItem: async (id: string, data: UpdateTodoDto): Promise<TodoItem> => {
+    // 필요한 필드만 추출하여 전송
+    const updateData = {
+      name: data.name,
+      isCompleted: data.isCompleted,
+      memo: data.memo,
+      imageUrl: data.imageUrl
+    };
+
+    const response = await axios.patch(`${BASE_URL}/${TENANT_ID}/items/${id}`, updateData);
+    return {
+      ...response.data,
+      _id: response.data.id
+    };
   },
 
   deleteItem: async (_id: string): Promise<void> => {
