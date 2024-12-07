@@ -13,7 +13,10 @@ console.log('API Configuration:', {
 export const todoApi = {
   getItems: async (): Promise<TodoItem[]> => {
     const response = await axios.get(`${BASE_URL}/${TENANT_ID}/items`);
-    return response.data;
+    return response.data.map((item: any) => ({
+      ...item,
+      _id: item.id,
+    }));
   },
 
   createItem: async (data: CreateTodoDto): Promise<TodoItem> => {
