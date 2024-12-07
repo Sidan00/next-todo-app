@@ -3,52 +3,60 @@ import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
 export async function GET(): Promise<Response> {
-  await dbConnect();
-
   try {
+    console.log('Connecting to database...');
+    await dbConnect();
+    console.log('Database connected');
+
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
-    console.log('Current tenantId:', tenantId);
+    console.log('TenantId:', tenantId);
 
     const todos = await Todo.find({ tenantId });
-    console.log('Found todos:', todos);
+    console.log('Todos found:', todos);
 
     return Response.json(todos);
   } catch (error) {
-    console.error('Get todos error:', error);
+    console.error('Detailed error:', error);
     return Response.json(
       { 
         error: 'Failed to fetch todos',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
       }, 
       { status: 500 }
     );
   }
 }
 
-export async function POST(request: NextRequest) {
-  await dbConnect();
-
+export async function POST(
+  request: NextRequest
+): Promise<Response> {
   try {
+    console.log('Connecting to database...');
+    await dbConnect();
+    console.log('Database connected');
+
     const body = await request.json();
-    console.log('받은 데이터:', body);
+    console.log('Request body:', body);
 
-    const todoData = {
+    const tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
+    console.log('TenantId:', tenantId);
+
+    const todo = await Todo.create({
       ...body,
-      tenantId: process.env.TENANT_ID,
-      isCompleted: false
-    };
-
-    console.log('저장할 데이터:', todoData);
-    const todo = await Todo.create(todoData);
-    
-    return Response.json(todo, { status: 201 });
-  } catch (error: any) {
-    console.error('Todo 생성 에러:', {
-      message: error.message,
-      code: error.code
+      tenantId
     });
+    console.log('Created todo:', todo);
+
+    return Response.json(todo);
+  } catch (error) {
+    console.error('Detailed error:', error);
     return Response.json(
-      { error: 'Failed to create todo', details: error.message },
+      { 
+        error: 'Failed to create todo',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      }, 
       { status: 500 }
     );
   }
