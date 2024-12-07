@@ -24,7 +24,7 @@ export default function TodoList({ items, onToggleComplete, type, isLoading }: T
         <div className="h-[300px] flex items-center justify-center">
           {/* 데스크탑용 이미지 */}
           <Image
-            src={`/images/Type=${type === 'todo' ? 'Todo' : 'Done'}, Size=Large.svg`}
+            src={`/images/type-${type === 'todo' ? 'todo' : 'done'}-large.svg`}
             alt={type === 'todo' ? '할 일이 없습니다' : '완료된 일이 없습니다'}
             width={300}
             height={300}
@@ -32,7 +32,7 @@ export default function TodoList({ items, onToggleComplete, type, isLoading }: T
           />
           {/* 모바일용 이미지 */}
           <Image
-            src={`/images/Type=${type === 'todo' ? 'Todo' : 'Done'}, Size=Small.svg`}
+            src={`/images/Type=${type === 'todo' ? 'todo' : 'done'}-small.svg`}
             alt={type === 'todo' ? '할 일이 없습니다' : '완료된 일이 없습니다'}
             width={200}
             height={200}
@@ -51,7 +51,7 @@ export default function TodoList({ items, onToggleComplete, type, isLoading }: T
   return (
     <ul className="space-y-2">
       {items.map(item => (
-        <li key={item._id} className={`p-4 rounded-full border-2 border-slate-900 hover:shadow-md transition-shadow
+        <li key={item._id} className={`p-4 rounded-full border border-slate-900 hover:shadow-md transition-shadow
           ${item.isCompleted ? 'bg-violet-100' : 'bg-white'}`}>
           <div className="w-full flex items-center gap-3">
             <button 

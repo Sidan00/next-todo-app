@@ -66,4 +66,4 @@ export async function DELETE(
   } catch (error) {
     return Response.json({ error: 'Failed to delete todo' }, { status: 500 });
   }
-} 
+}
