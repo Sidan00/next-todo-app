@@ -2,9 +2,15 @@ import { NextRequest } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: Props
 ) {
   await dbConnect();
 
@@ -12,9 +18,9 @@ export async function POST(
     const formData = await request.formData();
     const image = formData.get('image') as File;
     
-    if (!image) {
+    if (!image || !image.type.startsWith('image/')) {
       return Response.json(
-        { error: 'No image file provided' },
+        { error: 'Invalid image file' },
         { status: 400 }
       );
     }
@@ -22,9 +28,9 @@ export async function POST(
     const imageUrl = '/temp-image-url';
 
     const updatedTodo = await Todo.findByIdAndUpdate(
-      params.id,
+      context.params.id,
       { $set: { imageUrl } },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     if (!updatedTodo) {

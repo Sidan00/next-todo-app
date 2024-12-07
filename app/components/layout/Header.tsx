@@ -16,7 +16,7 @@ export default function Header() {
         >
           {/* 큰 화면용 로고 */}
           <Image
-            src="../images/logo.svg"
+            src="/images/logo.svg"
             alt="Do it Logo"
             width={100}
             height={40}

@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
@@ -15,7 +15,7 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   await dbConnect();
 
   try {
