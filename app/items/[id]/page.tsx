@@ -3,7 +3,7 @@ import TodoDetail from './TodoDetail';
 
 interface Props {
   params: Promise<{ _id: string }>;
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function Page({ params }: Props) {
