@@ -33,19 +33,44 @@ export const todoApi = {
   },
 
   updateItem: async (id: string, data: UpdateTodoDto): Promise<TodoItem> => {
-    // 필요한 필드만 추출하여 전송
-    const updateData = {
-      name: data.name,
-      isCompleted: data.isCompleted,
-      memo: data.memo,
-      imageUrl: data.imageUrl
-    };
+    try {
+      // 업데이트할 데이터 로깅
+      console.log('Updating item with data:', {
+        id,
+        updateData: {
+          name: data.name,
+          isCompleted: data.isCompleted,
+          memo: data.memo,
+          imageUrl: data.imageUrl
+        }
+      });
 
-    const response = await axios.patch(`${BASE_URL}/${TENANT_ID}/items/${id}`, updateData);
-    return {
-      ...response.data,
-      _id: response.data.id
-    };
+      const response = await axios.patch(
+        `${BASE_URL}/${TENANT_ID}/items/${id}`,
+        {
+          name: data.name,
+          isCompleted: data.isCompleted,
+          memo: data.memo,
+          imageUrl: data.imageUrl
+        }
+      );
+
+      console.log('Update response:', response.data);
+
+      return {
+        ...response.data,
+        _id: response.data.id
+      };
+    } catch (error: any) {
+      // 자세한 에러 정보 출력
+      console.error('Update error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+        config: error.config
+      });
+      throw error;
+    }
   },
 
   deleteItem: async (_id: string): Promise<void> => {
