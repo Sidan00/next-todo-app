@@ -10,8 +10,14 @@ import ImageUpload from '@/app/components/todo/ImageUpload';
 import { validateImage } from '@/app/lib/imageValidation';
 import { uploadToS3 } from '@/app/lib/s3';
 
-export default function ItemDetailPage({ params }: { params: { id: string } }) {
-  // id가 유효한지 확인
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default function ItemDetailPage({ params }: PageProps) {
   if (!params.id) {
     return <div>Invalid item ID</div>;
   }
