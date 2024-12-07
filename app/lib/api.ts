@@ -34,25 +34,22 @@ export const todoApi = {
 
   updateItem: async (id: string, data: UpdateTodoDto): Promise<TodoItem> => {
     try {
-      // 업데이트할 데이터 로깅
+      // null이나 undefined가 아닌 값만 포함하는 객체 생성
+      const updateData = {
+        name: data.name,
+        isCompleted: data.isCompleted,
+        ...(data.memo && { memo: data.memo }),
+        ...(data.imageUrl && { imageUrl: data.imageUrl })
+      };
+
       console.log('Updating item with data:', {
         id,
-        updateData: {
-          name: data.name,
-          isCompleted: data.isCompleted,
-          memo: data.memo,
-          imageUrl: data.imageUrl
-        }
+        updateData
       });
 
       const response = await axios.patch(
         `${BASE_URL}/${TENANT_ID}/items/${id}`,
-        {
-          name: data.name,
-          isCompleted: data.isCompleted,
-          memo: data.memo,
-          imageUrl: data.imageUrl
-        }
+        updateData
       );
 
       console.log('Update response:', response.data);
@@ -62,7 +59,6 @@ export const todoApi = {
         _id: response.data.id
       };
     } catch (error: any) {
-      // 자세한 에러 정보 출력
       console.error('Update error details:', {
         status: error.response?.status,
         data: error.response?.data,
