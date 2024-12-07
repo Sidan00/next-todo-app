@@ -21,22 +21,22 @@ export const todoApi = {
     return response.data;
   },
 
-  getItem: async (id: string): Promise<TodoItem> => {
-    const response = await axios.get(`${BASE_URL}/${TENANT_ID}/items/${id}`);
+  getItem: async (_id: string): Promise<TodoItem> => {
+    const response = await axios.get(`${BASE_URL}/${TENANT_ID}/items/${_id}`);
     return response.data;
   },
 
-  updateItem: async (id: string, data: UpdateTodoDto): Promise<TodoItem> => {
-    const response = await axios.patch(`${BASE_URL}/${TENANT_ID}/items/${id}`, data);
+  updateItem: async (_id: string, data: UpdateTodoDto): Promise<TodoItem> => {
+    const response = await axios.patch(`${BASE_URL}/${TENANT_ID}/items/${_id}`, data);
     return response.data;
   },
 
-  deleteItem: async (id: string): Promise<void> => {
-    await axios.delete(`${BASE_URL}/${TENANT_ID}/items/${id}`);
+  deleteItem: async (_id: string): Promise<void> => {
+    await axios.delete(`${BASE_URL}/${TENANT_ID}/items/${_id}`);
   },
 
-  uploadImage: async (id: string, formData: FormData): Promise<string> => {
-    const response = await axios.post(`${BASE_URL}/${TENANT_ID}/items/${id}/image`, formData, {
+  uploadImage: async (_id: string, formData: FormData): Promise<string> => {
+    const response = await axios.post(`${BASE_URL}/${TENANT_ID}/items/${_id}/image`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data.imageUrl;
