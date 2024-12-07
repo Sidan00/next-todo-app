@@ -2,20 +2,17 @@ import { NextRequest } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
-type Context = {
-  params: {
-    id: string;
-  };
-};
-
 export async function POST(
-  request: NextRequest,
-  context: Context
+  req: Request | NextRequest
 ): Promise<Response> {
+  const id = req.url
+    ? new URL(req.url).pathname.split('/').pop() || ''
+    : '';
+    
   await dbConnect();
 
   try {
-    const formData = await request.formData();
+    const formData = await req.formData();
     const image = formData.get('image') as File;
     
     if (!image || !image.type.startsWith('image/')) {
@@ -31,7 +28,7 @@ export async function POST(
     const imageUrl = '/temp-image-url';
 
     const updatedTodo = await Todo.findByIdAndUpdate(
-      context.params.id,
+      id,
       { $set: { imageUrl } },
       { new: true, runValidators: true }
     );
