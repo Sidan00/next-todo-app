@@ -32,7 +32,7 @@ export default function TodoList({ items, onToggleComplete, type, isLoading }: T
           />
           {/* 모바일용 이미지 */}
           <Image
-            src={`/images/Type=${type === 'todo' ? 'Todo' : 'Done'}, Size=Small.svg`}
+            src={`/images/type-${type === 'todo' ? 'todo' : 'done'}-small.svg`}
             alt={type === 'todo' ? '할 일이 없습니다' : '완료된 일이 없습니다'}
             width={200}
             height={200}

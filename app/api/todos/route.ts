@@ -2,16 +2,26 @@ import { NextRequest } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
-const tenantId = process.env.tenantId;
-
-export async function GET() {
+export async function GET(): Promise<Response> {
   await dbConnect();
 
   try {
+    const tenantId = process.env.NEXT_PUBLIC_TENANT_ID;
+    console.log('Current tenantId:', tenantId);
+
     const todos = await Todo.find({ tenantId });
+    console.log('Found todos:', todos);
+
     return Response.json(todos);
   } catch (error) {
-    return Response.json({ error: 'Failed to fetch todos' }, { status: 500 });
+    console.error('Get todos error:', error);
+    return Response.json(
+      { 
+        error: 'Failed to fetch todos',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      }, 
+      { status: 500 }
+    );
   }
 }
 
@@ -20,10 +30,27 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const todo = await Todo.create({ ...body, tenantId });
+    console.log('받은 데이터:', body);
+
+    const todoData = {
+      ...body,
+      tenantId: process.env.TENANT_ID,
+      isCompleted: false
+    };
+
+    console.log('저장할 데이터:', todoData);
+    const todo = await Todo.create(todoData);
+    
     return Response.json(todo, { status: 201 });
-  } catch (error) {
-    return Response.json({ error: 'Failed to create todo' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Todo 생성 에러:', {
+      message: error.message,
+      code: error.code
+    });
+    return Response.json(
+      { error: 'Failed to create todo', details: error.message },
+      { status: 500 }
+    );
   }
 }
 

@@ -15,11 +15,15 @@ export default function Home() {
       try {
         setIsLoading(true);
         const data = await todoApi.getItems();
+        console.log('Loaded items:', data);
         setItems(data);
+      } catch (error) {
+        console.error('Failed to load items:', error);
       } finally {
         setIsLoading(false);
       }
     };
+
     loadItems();
   }, []);
 
