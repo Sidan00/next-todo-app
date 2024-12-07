@@ -8,16 +8,8 @@ if (!TENANT_ID) {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const formatBaseUrl = (url: string | undefined): string => {
-  if (!url) return '';
-  
-  const cleanUrl = url.replace(/^(https?:)?\/+/, '').replace(/\/+$/, '');
-  
-  return `https://${cleanUrl}`;
-};
-
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: BASE_URL,
 });
 
 console.log('API Configuration:', {
