@@ -10,9 +10,21 @@ import ImageUpload from '@/app/components/todo/ImageUpload';
 import { validateImage } from '@/app/lib/imageValidation';
 import { uploadToS3 } from '@/app/lib/s3';
 
-export default function TodoDetail() {
+export default function ItemDetailPage({ params }: { params: { id: string } }) {
+  // id가 유효한지 확인
+  if (!params.id) {
+    return <div>Invalid item ID</div>;
+  }
+
+  return (
+    <div>
+      <TodoDetail id={params.id} />
+    </div>
+  );
+}
+
+function TodoDetail({ id }: { id: string }) {
   const router = useRouter();
-  const params = useParams();
   const [item, setItem] = useState<TodoItem | null>(null);
   const [formData, setFormData] = useState<UpdateTodoDto>({});
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -23,7 +35,7 @@ export default function TodoDetail() {
     const loadItem = async () => {
       try {
         setIsLoading(true);
-        const data = await todoApi.getItem(params.id as string);
+        const data = await todoApi.getItem(id);
         setItem(data);
         setFormData(data);
       } catch (error) {
@@ -34,7 +46,7 @@ export default function TodoDetail() {
       }
     };
     loadItem();
-  }, [params.id, router]);
+  }, [id, router]);
 
   const handleImageSelect = (file: File) => {
     setError(null);
@@ -50,6 +62,9 @@ export default function TodoDetail() {
     try {
       setIsLoading(true);
       
+      console.log('Updating item:', item);
+      console.log('Item ID:', item._id);
+
       let imageUrl = formData.imageUrl;
       
       if (selectedImage) {
@@ -77,27 +92,13 @@ export default function TodoDetail() {
     
     try {
       setIsLoading(true);
-      
-      // 이미지가 있다면 S3에서 삭제
-      if (item.imageUrl) {
-        try {
-          const formData = new FormData();
-          formData.append('oldImageUrl', item.imageUrl);
-          
-          await fetch('/api/upload', {
-            method: 'DELETE',
-            body: formData,
-          });
-        } catch (error) {
-          console.error('Failed to delete image:', error);
-        }
-      }
-
-      await todoApi.deleteItem(item._id);
+      await todoApi.deleteItem(id);
       router.push('/');
     } catch (error) {
       console.error('Failed to delete item:', error);
       alert('삭제에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
