@@ -62,9 +62,6 @@ function TodoDetail({ id }: { id: string }) {
     try {
       setIsLoading(true);
       
-      console.log('Updating item:', item);
-      console.log('Item ID:', item._id);
-
       let imageUrl = formData.imageUrl;
       
       if (selectedImage) {
