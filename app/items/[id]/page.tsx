@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { todoApi } from '@/app/lib/api';
 import { TodoItem, UpdateTodoDto } from '@/app/types/todo';
 import Button from '@/app/components/ui/Button';
@@ -9,30 +9,32 @@ import ImageUpload from '@/app/components/todo/ImageUpload';
 import { uploadToS3 } from '@/app/lib/s3';
 
 interface PageProps {
-  params: { id: string };
+  params: { id: string | string[] };
 }
 
 export default function Page({ params }: PageProps) {
-  if (!params.id) {
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  if (!id) {
     return <div>Invalid item ID</div>;
   }
 
   return (
     <div>
-      <TodoDetail id={params.id} />
+      <TodoDetail id={id} />
     </div>
   );
 }
 
 function TodoDetail({ id }: { id: string }) {
   const router = useRouter();
-  const [item, setItem] = useState<TodoItem | null>(null);
-  const [formData, setFormData] = useState<UpdateTodoDto>({});
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [item, setItem] = React.useState<TodoItem | null>(null);
+  const [formData, setFormData] = React.useState<UpdateTodoDto>({});
+  const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const loadItem = async () => {
       try {
         setIsLoading(true);
@@ -90,7 +92,7 @@ function TodoDetail({ id }: { id: string }) {
     
     try {
       setIsLoading(true);
-      await todoApi.deleteItem(id);
+      await todoApi.deleteItem(item._id);
       router.push('/');
     } catch (error) {
       console.error('Failed to delete item:', error);
