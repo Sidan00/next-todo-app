@@ -8,7 +8,11 @@ import Button from '@/app/components/ui/Button';
 import ImageUpload from '@/app/components/todo/ImageUpload';
 import { uploadToS3 } from '@/app/lib/s3';
 
-export default function TodoDetail({ _id }: { _id: string }) {
+interface TodoDetailProps {
+  _id: string;
+}
+
+export default function TodoDetail({ _id }: TodoDetailProps) {
   const router = useRouter();
   const [item, setItem] = useState<TodoItem | null>(null);
   const [formData, setFormData] = useState<UpdateTodoDto>({});
@@ -53,7 +57,7 @@ export default function TodoDetail({ _id }: { _id: string }) {
         imageUrl = await uploadToS3(selectedImage, item.imageUrl);
       }
 
-      const updatedItem = await todoApi.updateItem(item._id, {
+      const updatedItem = await todoApi.updateItem(_id, {
         ...formData,
         imageUrl,
       });
@@ -74,7 +78,7 @@ export default function TodoDetail({ _id }: { _id: string }) {
     
     try {
       setIsLoading(true);
-      await todoApi.deleteItem(item._id);
+      await todoApi.deleteItem(_id);
       router.push('/');
     } catch (error) {
       console.error('Failed to delete item:', error);
