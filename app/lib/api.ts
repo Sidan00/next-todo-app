@@ -1,42 +1,79 @@
 import axios from 'axios';
 import { CreateTodoDto, UpdateTodoDto, TodoItem } from '../types/todo';
 
-const api = axios.create({ // API 요청 생성
-  baseURL: '/api/todos',
+const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
+if (!TENANT_ID) {
+  throw new Error('NEXT_PUBLIC_TENANT_ID is not defined');
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+const formatBaseUrl = (url: string | undefined): string => {
+  if (!url) return '';
+  
+  const cleanUrl = url.replace(/^(https?:)?\/+/, '').replace(/\/+$/, '');
+  
+  return `https://${cleanUrl}`;
+};
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+});
+
+console.log('API Configuration:', {
+  originalUrl: BASE_URL,
+  formattedUrl: api.defaults.baseURL,
+  fullUrl: `${api.defaults.baseURL}/${TENANT_ID}/items`,
+  TENANT_ID
 });
 
 export const todoApi = {
-  getItems: async (): Promise<TodoItem[]> => { // 할 일 목록 조회
+  getItems: async (): Promise<TodoItem[]> => {
     try {
-      const response = await api.get('/');
-      console.log('API response:', response.data); // 응답 데이터 확인
-      return response.data;
+      const response = await api.get(`/${TENANT_ID}/items`);
+      return response.data.map((item: any) => ({
+        ...item,
+        _id: item.id,
+      }));
     } catch (error) {
       console.error('Get items error:', error);
       throw error;
     }
   },
-  createItem: async (data: CreateTodoDto): Promise<TodoItem> => { // 할 일 생성
+  createItem: async (data: CreateTodoDto): Promise<TodoItem> => {
     try {
-      const response = await api.post('/', data);
+      const response = await api.post(`/${TENANT_ID}/items`, data);
       return response.data;
     } catch (error) {
-      console.error('API error:', error); // 에러 로깅 추가
+      console.error('API error:', error);
       throw error;
     }
   },
-  getItem: async (id: string): Promise<TodoItem> => { // 할 일 상세 조회
-    const response = await api.get(`/${id}`);
-    return response.data;
+  getItem: async (id: string): Promise<TodoItem> => {
+    try {
+      const response = await api.get(`/${TENANT_ID}/items/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Get item error:', error);
+      throw error;
+    }
   },
-  updateItem: async (id: string, data: UpdateTodoDto): Promise<TodoItem> => { // 할 일 수정 
-    const response = await api.patch(`/${id}`, data);
-    return response.data;
+  updateItem: async (id: string, data: UpdateTodoDto): Promise<TodoItem> => {
+    try {
+      const response = await api.patch(`/${TENANT_ID}/items/${id}`, data);
+      return {
+        ...response.data,
+        _id: response.data.id
+      };
+    } catch (error) {
+      console.error('Update item error:', error);
+      throw error;
+    }
   },
-  deleteItem: async (id: string): Promise<void> => { // 할 일 삭제
+  deleteItem: async (id: string): Promise<void> => {
     await api.delete(`/${id}`);
   },
-  uploadImage: async (id: string, formData: FormData): Promise<string> => { // 이미지 업로드  
+  uploadImage: async (id: string, formData: FormData): Promise<string> => {
     const response = await api.post(`/${id}/image`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
