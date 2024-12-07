@@ -1,5 +1,10 @@
 import TodoDetailPage from './TodoDetailPage';
 
-export default function Page({ params }: { params: { id: string } }) {
-  return <TodoDetailPage params={params} />;
+type Props = {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default async function Page(props: Props) {
+  return <TodoDetailPage params={props.params} />;
 }
