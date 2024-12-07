@@ -4,7 +4,7 @@ import Todo from '@/app/models/Todo';
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   await dbConnect();
 
@@ -22,7 +22,7 @@ export async function POST(
     const imageUrl = '/temp-image-url';
 
     const updatedTodo = await Todo.findByIdAndUpdate(
-      context.params.id,
+      params.id,
       { $set: { imageUrl } },
       { new: true }
     );
