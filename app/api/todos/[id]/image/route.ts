@@ -2,17 +2,10 @@ import { NextRequest } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
-
 export async function POST(
   request: NextRequest,
-  context: RouteContext
-) {
-  const { id } = context.params;
+  { params }: { params: { id: string } }
+): Promise<Response> {
   await dbConnect();
 
   try {
@@ -20,8 +13,8 @@ export async function POST(
     const image = formData.get('image') as File;
     
     if (!image || !image.type.startsWith('image/')) {
-      return Response.json(
-        { error: 'Invalid image file' },
+      return new Response(
+        JSON.stringify({ error: 'Invalid image file' }),
         { status: 400 }
       );
     }
@@ -29,23 +22,26 @@ export async function POST(
     const imageUrl = '/temp-image-url';
 
     const updatedTodo = await Todo.findByIdAndUpdate(
-      id,
+      params.id,
       { $set: { imageUrl } },
       { new: true, runValidators: true }
     );
 
     if (!updatedTodo) {
-      return Response.json(
-        { error: 'Todo not found' },
+      return new Response(
+        JSON.stringify({ error: 'Todo not found' }),
         { status: 404 }
       );
     }
 
-    return Response.json({ imageUrl });
+    return new Response(
+      JSON.stringify({ imageUrl }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Image upload error:', error);
-    return Response.json(
-      { error: 'Failed to upload image' },
+    return new Response(
+      JSON.stringify({ error: 'Failed to upload image' }),
       { status: 500 }
     );
   }
