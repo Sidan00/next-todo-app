@@ -3,16 +3,16 @@ import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
 export async function POST(
-  req: Request | NextRequest
+  request: NextRequest
 ): Promise<Response> {
-  const id = req.url
-    ? new URL(req.url).pathname.split('/').pop() || ''
+  const id = request.url
+    ? new URL(request.url).pathname.split('/').pop() || ''
     : '';
     
   await dbConnect();
 
   try {
-    const formData = await req.formData();
+    const formData = await request.formData();
     const image = formData.get('image') as File;
     
     if (!image || !image.type.startsWith('image/')) {
