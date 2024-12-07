@@ -3,10 +3,11 @@ import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
 export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const id = context.params.id;
+  request: NextRequest
+): Promise<Response> {
+  const id = request.url
+    ? new URL(request.url).pathname.split('/').pop() || ''
+    : '';
   await dbConnect();
 
   try {
@@ -21,17 +22,18 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const id = context.params.id;
+  request: NextRequest
+): Promise<Response> {
+  const id = request.url
+    ? new URL(request.url).pathname.split('/').pop() || ''
+    : '';
   await dbConnect();
 
   try {
     const body = await request.json();
     const updatedTodo = await Todo.findByIdAndUpdate(
       id,
-      { $set: body },
+      { ...body },
       { new: true }
     );
     
@@ -45,12 +47,22 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest
+): Promise<Response> {
+  const id = request.url
+    ? new URL(request.url).pathname.split('/').pop() || ''
+    : '';
   await dbConnect();
 
   try {
-    await Todo.findOneAndDelete({ _id: params.id, tenantId: process.env.tenantId });
-    return new Response(null, { status: 204 });
+    const deletedTodo = await Todo.findByIdAndDelete(id);
+    
+    if (!deletedTodo) {
+      return Response.json({ error: 'Todo not found' }, { status: 404 });
+    }
+    
+    return Response.json({ message: 'Todo deleted successfully' });
   } catch (error) {
     return Response.json({ error: 'Failed to delete todo' }, { status: 500 });
   }
