@@ -2,11 +2,17 @@ import { NextRequest } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Todo from '@/app/models/Todo';
 
+interface RouteContext {
+  params: {
+    id: string;
+  };
+}
+
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
-  const { id } = params;
+  const { id } = context.params;
   await dbConnect();
 
   try {
