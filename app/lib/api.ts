@@ -2,9 +2,8 @@ import axios from 'axios';
 import { CreateTodoDto, UpdateTodoDto, TodoItem } from '../types/todo';
 
 const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ||'https://assignment-todolist-api.vercel.app/api';
 
-// API URL 구성을 로깅하여 확인
 console.log('API Configuration:', {
   TENANT_ID,
   BASE_URL,
