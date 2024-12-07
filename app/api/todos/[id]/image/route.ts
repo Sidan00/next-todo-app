@@ -4,7 +4,7 @@ import Todo from '@/app/models/Todo';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   await dbConnect();
 
@@ -19,12 +19,10 @@ export async function POST(
       );
     }
     
-    // 임시로 이미지 URL을 반환
-    const imageUrl = '/temp-image-url';  // 실제 업로드된 이미지 URL로 교체 필요
+    const imageUrl = '/temp-image-url';
 
-    // Todo 문서 업데이트
     const updatedTodo = await Todo.findByIdAndUpdate(
-      params.id,
+      context.params.id,
       { $set: { imageUrl } },
       { new: true }
     );
