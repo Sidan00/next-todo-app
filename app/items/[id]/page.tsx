@@ -1,10 +1,14 @@
 import TodoDetail from './TodoDetail';
 
-type Props = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+interface PageProps {
+  params: Promise<{ id: string }>;
 }
 
-export default function Page(props: Props) {
-  return <TodoDetail id={props.params.id} />;
+export default async function Page(params: PageProps) {
+  const { id } = await params.params;
+  return (
+    <div className="container mx-auto px-4">
+      <TodoDetail id={id} />
+    </div>
+  );
 }
